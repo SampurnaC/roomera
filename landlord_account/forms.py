@@ -1,5 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import CustomUser, LandlordProfile
 
 class LandlordSignUpForm(UserCreationForm):
@@ -28,3 +29,11 @@ class LandlordSignUpForm(UserCreationForm):
         )
         
         return user
+
+class LandlordSignInForm(AuthenticationForm):
+    def confirm_login_allowed(self, user):
+        if not user.is_landlord:
+            raise forms.ValidationError(
+                "You do not have permission to log in as a landlord.",
+                code='invalid_login',
+            )
