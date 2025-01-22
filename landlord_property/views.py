@@ -46,7 +46,9 @@ def add_room(request,property_id):
 
 def search_rooms(request):
     form=RoomSearchForm(request.GET or None)
-    rooms=Room.objects.filter(is_available=True)
+    rooms=None
+    if request.GET:
+        rooms=Room.objects.filter(is_available=True)
     
     if form.is_valid():
         postcode=form.cleaned_data.get("postcode")
