@@ -1,0 +1,60 @@
+{% extends 'landlord_account/main.html' %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Room Search</title>
+</head>
+<body>
+    {% block content %}
+    <!-- Hero Section with Search Form -->
+    <section class="hero bg-light text-center py-5">
+        <div class="container">
+            <h1 class="display-4">Find Your Perfect Room Today!</h1>
+            <form method="GET" action="{% url 'landlord_property:search_rooms' %}" class="row g-3 justify-content-center mt-4">
+                <div class="col-md-3">
+                    <input type="text" name="postcode" value="{{ form.postcode.value }}" class="form-control" placeholder="Post Code">
+                </div>
+                <div class="col-md-2">
+                    <input type="number" name="min_rent" value="{{ form.min_rent.value }}" class="form-control" placeholder="Min Rent">
+                </div>
+                <div class="col-md-2">
+                    <input type="number" name="max_rent" value="{{ form.max_rent.value }}" class="form-control" placeholder="Max Rent">
+                </div>
+                <div class="col-md-2">
+                    <input type="number" name="max_occupancy" value="{{ form.max_occupancy.value }}" class="form-control" placeholder="Max Occupancy">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <div class="container">
+        <section class="results py-5">
+            {% if rooms is None %}
+                <!-- Initial page load: Show welcome message -->
+                <p class="text-center">Welcome to our rental platform! Use the search form above to find rooms.</p>
+            {% elif rooms %}
+                <!-- Display search results -->
+                <h2 class="text-center mb-5">Search Results</h2>
+                <ul class="list-group">
+                    {% for room in rooms %}
+                        <li class="list-group-item">
+                            <strong>{{ room.title }}</strong> - {{ room.property.city }} - £{{ room.rent_price }}<br>
+                            Max Occupancy: {{ room.max_occupancy }}
+                            <p>{{ room.description|truncatewords:20 }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <!-- No results found -->
+                <p class="text-center">No rooms found matching your criteria.</p>
+            {% endif %}
+        </section>
+    </div>
+    {% endblock %}
+</body>
+</html>
