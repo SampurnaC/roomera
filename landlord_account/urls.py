@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import landlord_register,landlord_login,landlord_dashboard
 
-app_name="roomera"
+app_name="landlord_account"
 
 urlpatterns = [
     path('register/', landlord_register, name='landlord_register'),
