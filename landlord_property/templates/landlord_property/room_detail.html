@@ -1,0 +1,38 @@
+{% extends 'landlord_account/main.html' %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-lg p-4">
+                <div class="card-body">
+                    <h2 class="card-title fw-bold">{{ room.title }}</h2>
+                    <p class="card-text text-muted">{{ room.description }}</p>
+
+                    <h4 class="text-primary">$ {{ room.rent_price }} / month</h4>
+
+                    <p><strong>Max Occupancy:</strong> {{ room.max_occupancy }} people</p>
+
+                    {% if room.is_available %}
+                        <p class="badge bg-success">Available</p>
+                    {% else %}
+                        <p class="badge bg-danger">Not Available</p>
+                    {% endif %}
+
+                    <div class="mt-4">
+                        <a href="{% url 'landlord_property:home' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Rooms
+                        </a>
+                        {% if room.is_available %}
+                            <a href="#" class="btn btn-primary">
+                                <i class="bi bi-calendar-check"></i> Book Now
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
