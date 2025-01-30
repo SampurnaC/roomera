@@ -43,7 +43,7 @@
                 <ul class="list-group">
                     {% for room in rooms %}
                         <li class="list-group-item">
-                            <strong>{{ room.title }}</strong> - {{ room.property.city }} - £{{ room.rent_price }}<br>
+                            <strong><a href="{% url 'landlord_property:room_detail' room.id %}">{{ room.title }}</a></strong> - {{ room.property.city }} - £{{ room.rent_price }}<br>
                             Max Occupancy: {{ room.max_occupancy }}
                             <p>{{ room.description|truncatewords:20 }}</p>
                         </li>
