@@ -44,6 +44,15 @@ class LandlordSignUpForm(UserCreationForm):
         return user
 
 class LandlordSignInForm(AuthenticationForm):
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your username'}),
+        label="Username"
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter your password'}),
+        label="Password"
+    )
+
     def confirm_login_allowed(self, user):
         if not user.is_landlord:
             raise forms.ValidationError(
