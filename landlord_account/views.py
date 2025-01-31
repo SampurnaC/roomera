@@ -8,7 +8,7 @@ def landlord_register(request):
         if form.is_valid():
             user=form.save()
             login(request, user)
-            return redirect('roomera:landlord_dashboard')
+            return redirect('landlord_account:landlord_dashboard')
     else:
         form=LandlordSignUpForm()
 
