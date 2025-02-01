@@ -22,7 +22,7 @@ def add_property(request):
         property.landlord=landlord_profile
         property.save()
         
-        return redirect('home')
+        return redirect('landlord_property:home')
     else:
         form=PropertyForm()
     return render(request,'landlord_property/add_property.html',{'form': form})
@@ -30,7 +30,7 @@ def add_property(request):
 @login_required
 def add_room(request,property_id):
     if not request.user.is_landlord:
-        return redirect("home")
+        return redirect("landlord_property:home")
     property_obj=get_object_or_404(Property,id=property_id,landlord=request.user.landlord_profile)
     
     if request.method=="POST":
@@ -38,11 +38,11 @@ def add_room(request,property_id):
         room=form.save(commit=False)
         room.property=property_obj
         room.save()
-        return redirect('roomera:home')
+        return redirect('landlord_property:home')
     else:
         form=RoomForm()
         
-    return render(request,'landlord_property/add_room.html',{'form': form})
+    return render(request,'landlord_property/add_room.html',{'form': form, 'property_id': property_id})
 
 def search_rooms(request):
     form=RoomSearchForm(request.GET or None)
