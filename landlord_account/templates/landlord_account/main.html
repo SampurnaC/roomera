@@ -28,8 +28,25 @@
               <a class="nav-link" href="#">Pricing</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link disabled" href="#">Add Property</a>
+              <a class="nav-link" href="{% url 'landlord_property:add_property' %}">Add Property</a>
             </li>
+            <li class="nav-item">
+              {% if properties %}
+                  <div class="dropdown">
+                      <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Add Room
+                      </button>
+                      <ul class="dropdown-menu">
+                          {% for property in properties %}
+                              <li><a class="dropdown-item" href="{% url 'landlord_property:add_room' property.id %}">Add Room to {{ property.name }}</a></li>
+                          {% endfor %}
+                      </ul>
+                  </div>
+              {% else %}
+                  <a class="nav-link disabled" href="#">Add Room</a>
+              {% endif %}
+          </li>
+          
           </ul>
         </div>
       </nav>
