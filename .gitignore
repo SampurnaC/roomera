@@ -1,2 +1,5 @@
 venv
 .env
+roomera/__pycache__/
+landlord_account/__pycache__/
+landlord_property/__pycache__/
