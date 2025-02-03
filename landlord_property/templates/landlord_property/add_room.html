@@ -1,11 +1,43 @@
 {% extends 'landlord_account/main.html' %}
 
 {% block content %}
-    <h1>Add a Room</h1>
-    <form action="" method="post">
-        {% csrf_token %}
-        {{form.as_p}}
-        <button type="submit">Add a Room</button>
-    </form>
+    <div class="container mt-5">
+        <h1 class="mb-4">Add a Room</h1>
+        <form action="" method="post">
+            {% csrf_token %}
+            
+            <!-- Room Title -->
+            <div class="mb-3">
+                <label for="id_title" class="form-label">Room Title</label>
+                <input type="text" name="title" class="form-control" id="id_title" value="{{ form.title.value|default_if_none:'' }}" required>
+            </div>
 
+            <!-- Room Description -->
+            <div class="mb-3">
+                <label for="id_description" class="form-label">Room Description</label>
+                <textarea name="description" class="form-control" id="id_description" rows="4">{{ form.description.value|default_if_none:'' }}</textarea>
+            </div>
+
+            <!-- Rent Price -->
+            <div class="mb-3">
+                <label for="id_rent_price" class="form-label">Rent Price</label>
+                <input type="number" name="rent_price" class="form-control" id="id_rent_price" value="{{ form.rent_price.value }}" required>
+            </div>
+
+            <!-- Max Occupancy -->
+            <div class="mb-3">
+                <label for="id_max_occupancy" class="form-label">Max Occupancy</label>
+                <input type="number" name="max_occupancy" class="form-control" id="id_max_occupancy" value="{{ form.max_occupancy.value }}" required>
+            </div>
+
+            <!-- Availability Checkbox -->
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="is_available" class="form-check-input" id="id_is_available" {% if form.is_available.value %}checked{% endif %}>
+                <label class="form-check-label" for="id_is_available">Available</label>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Add Room</button>
+        </form>
+    </div>
 {% endblock content %}
