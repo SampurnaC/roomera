@@ -8,8 +8,15 @@ class PropertyForm(forms.ModelForm):
         
 class RoomForm(forms.ModelForm):
     class Meta:
-        model=Room
-        fields=['title','description','rent_price','max_occupancy','is_available']
+        model = Room
+        fields = ['title', 'description', 'rent_price', 'max_occupancy', 'is_available']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Room Title'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Room Description'}),
+            'rent_price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Rent Price'}),
+            'max_occupancy': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Max Occupancy'}),
+            'is_available': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
         
 class RoomSearchForm(forms.Form):
     postcode=forms.CharField(max_length=100,required=False,label="Post Code")
