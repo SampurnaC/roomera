@@ -23,4 +23,4 @@ class Room(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return f"{self.title} - {self.property.name if self.property else 'No Property'}"
+        return f"{self.property.landlord} {self.title}"

@@ -65,7 +65,7 @@ def search_rooms(request):
         if max_occupancy is not None:
             rooms=rooms.filter(max_occupancy__lte=max_occupancy)
         
-    return render(request, "landlord_property/index.html", {'form':form,'rooms':rooms})
+    return render(request, "landlord_property/search_results.html", {'form':form,'rooms':rooms})
 
 def room_detail(request, room_id):
     room = get_object_or_404(Room, id=room_id)
