@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 from .forms import LandlordSignUpForm,LandlordSignInForm
 
 def landlord_register(request):
@@ -21,11 +22,15 @@ def landlord_login(request):
         if form.is_valid():
             user=form.get_user()
             login(request,user)
-            return redirect('roomera:landlord_dashboard')
+            return redirect('landlord_account:landlord_dashboard')
     else:
         form=LandlordSignInForm()
     return render(request, 'landlord_account/landlord_login.html', {'form': form})
 
+@login_required
+def landlord_logout(request):
+    logout(request)
+    return redirect('landlord_property:home')
 
 def landlord_dashboard(request):
     return render(request, 'landlord_account/landlord_dashboard.html')
