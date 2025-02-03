@@ -1,0 +1,28 @@
+{% extends 'landlord_account/main.html' %}
+{% block content %}
+  
+    <!-- Results Section -->
+    <div class="container">
+    <section class="results py-5">
+        {% if rooms is None %}
+            <!-- Initial page load: Show welcome message -->
+            <p class="text-center">Welcome to our rental platform! Use the search form above to find rooms.</p>
+        {% elif rooms %}
+            <!-- Display search results -->
+            <h2 class="text-center mb-5">Search Results</h2>
+            <ul class="list-group">
+                {% for room in rooms %}
+                    <li class="list-group-item">
+                        <strong><a href="{% url 'landlord_property:room_detail' room.id %}">{{ room.title }}</a></strong> - {{ room.property.city }} - £{{ room.rent_price }}<br>
+                        Max Occupancy: {{ room.max_occupancy }}
+                        <p>{{ room.description|truncatewords:20 }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <!-- No results found -->
+            <p class="text-center">No rooms found matching your criteria.</p>
+        {% endif %}
+    </section>
+    </div>
+{% endblock content %}
