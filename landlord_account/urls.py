@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import landlord_register,landlord_login,landlord_dashboard
+from .views import landlord_register,landlord_login,landlord_logout, landlord_dashboard
 
 app_name="landlord_account"
 
 urlpatterns = [
     path('register/', landlord_register, name='landlord_register'),
     path('login/', landlord_login, name='landlord_login'),
+    path('logout/', landlord_logout, name='landlord_logout'),
     path('dashboard/', landlord_dashboard, name='landlord_dashboard'),
 ]
