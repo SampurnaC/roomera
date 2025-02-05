@@ -9,7 +9,7 @@ class PropertyForm(forms.ModelForm):
 class RoomForm(forms.ModelForm):
     class Meta:
         model = Room
-        fields = ['title', 'description', 'rent_price', 'max_occupancy', 'is_available']
+        fields = ['title', 'description', 'rent_price', 'max_occupancy', 'is_available','image']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Room Title'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Room Description'}),
