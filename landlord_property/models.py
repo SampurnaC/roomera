@@ -20,6 +20,7 @@ class Room(models.Model):
     rent_price=models.DecimalField(max_digits=10, decimal_places=2)
     max_occupancy=models.IntegerField()
     is_available=models.BooleanField(default=True)
+    is_featured=models.BooleanField(default=False)
     created_at=models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
