@@ -74,8 +74,8 @@
                 <img src="{{ room.image.url }}" alt="Room Image" class="img-fluid">
                 <div class="card-body">
                     <h5 class="card-title">{{ room.title }}</h5>
-                    <p class="card-text">Rent: ${{ room.rent }} / month</p>
-                    <a href="{% url 'room_detail' room.id %}" class="btn btn-outline-primary">View Details</a>
+                    <p class="card-text">Rent: £{{ room.rent_price }} / month</p>
+                    <a href="{% url 'landlord_property:room_detail' room.id %}" class="btn btn-outline-primary">View Details</a>
                 </div>
             </div>
         </div>
@@ -105,5 +105,10 @@
         </div>
     </div>
 </section>
+
+<!-- Footer Section -->
+<footer class="bg-light text-center py-3 mt-5">
+    <p>&copy; {{ now|date:"Y" }} RoomEra. All rights reserved.</p>
+</footer>
 
 {% endblock %}
