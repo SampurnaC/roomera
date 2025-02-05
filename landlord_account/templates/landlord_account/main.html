@@ -26,18 +26,30 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
+            
+            {% if not user.is_authenticated %}
+            <!-- Show Register and Login links if user is NOT authenticated -->
             <li class="nav-item active">
-              <a class="nav-link" href="{% url 'landlord_account:landlord_register' %}">Register</a>
+              <a class="nav-link" href="{% url 'landlord_account:landlord_register' %}">Landlord Register</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'landlord_account:landlord_login' %}">Login</a>
+              <a class="nav-link" href="{% url 'landlord_account:landlord_login' %}">Landlord Login</a>
             </li>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <!-- Show Logout link if user is authenticated -->
             <li class="nav-item">
-              <a class="nav-link" href="#">Pricing</a>
+              <a class="nav-link" href="{% url 'landlord_account:landlord_logout' %}">Logout</a>
             </li>
+            {% endif %}
+
+            {% if user.is_authenticated and user.is_landlord %}
+            <!-- Show "Add Property" and "Add Room" links if user is authenticated and is a landlord -->
             <li class="nav-item">
               <a class="nav-link" href="{% url 'landlord_property:add_property' %}">Add Property</a>
             </li>
+
             <li class="nav-item dropdown">
               {% if properties %}
                   <a class="nav-link dropdown-toggle" href="#" id="addRoomDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -52,6 +64,8 @@
                   <a class="nav-link disabled" href="#">Add Room</a>
               {% endif %}
             </li>
+            {% endif %}
+            
           </ul>
         </div>
       </nav>
