@@ -5,7 +5,8 @@ from .models import Property,Room
 from django.contrib.auth.decorators import login_required
 
 def index(request):
-    return render(request, 'landlord_property/index.html')
+    featured_rooms = Room.objects.filter(is_featured=True)
+    return render(request, 'landlord_property/index.html',{'featured_rooms': featured_rooms})
 
 @login_required
 def add_property(request):
