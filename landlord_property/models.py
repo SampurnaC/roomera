@@ -22,6 +22,14 @@ class Room(models.Model):
     is_available=models.BooleanField(default=True)
     is_featured=models.BooleanField(default=False)
     created_at=models.DateTimeField(auto_now_add=True)
-    
+
     def __str__(self):
         return f"{self.property.landlord} {self.title}"
+
+class RoomImage(models.Model):
+    room=models.ForeignKey(Room, on_delete=models.CASCADE, related_name="images")
+    image=models.ImageField(upload_to="room_images/")
+    uploaded_at=models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Image for {self.room.title}"
