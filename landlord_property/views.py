@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .forms import PropertyForm,RoomForm,RoomSearchForm
+from .forms import PropertyForm,RoomForm,RoomImageForm,RoomSearchForm
 from landlord_account.models import LandlordProfile
-from .models import Property,Room
+from .models import Property,Room,RoomImage
 from django.contrib.auth.decorators import login_required
 
 def index(request):
@@ -36,14 +36,21 @@ def add_room(request,property_id):
     
     if request.method=="POST":
         form=RoomForm(request.POST)
-        room=form.save(commit=False)
-        room.property=property_obj
-        room.save()
-        return redirect('landlord_property:home')
+        image_form=RoomImageForm(request.POST, request.FILES)
+        if form.is_valid():
+          room=form.save(commit=False)
+          room.property=property_obj
+          room.save()
+          
+          images=request.FILES.getlist('image')
+          for image in images:
+            RoomImage.objects.create(room=room,image=image)
+          return redirect('landlord_property:home')
     else:
         form=RoomForm()
+        image_form=RoomImageForm()
         
-    return render(request,'landlord_property/add_room.html',{'form': form, 'property_id': property_id})
+    return render(request,'landlord_property/add_room.html',{'form': form, 'property_id': property_id, 'image_form': image_form})
 
 def search_rooms(request):
     form=RoomSearchForm(request.GET or None)
