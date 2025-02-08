@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
-    is_landlord = models.BooleanField(default=False)
+    is_landlord=models.BooleanField(default=False)
+    is_tenant=models.BooleanField(default=False)
     phone=models.CharField(max_length=15, blank=True, null=True)
     GENDER_CHOICES=[
         ('M', 'Male'),
