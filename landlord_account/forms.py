@@ -35,12 +35,6 @@ class LandlordSignUpForm(UserCreationForm):
         if commit:
             user.save()
 
-        LandlordProfile.objects.create(
-            user=user,
-            properties_owned=self.cleaned_data.get('properties_owned'),
-            business_name=self.cleaned_data.get('business_name')
-        )
-        
         return user
 
 class LandlordSignInForm(AuthenticationForm):
