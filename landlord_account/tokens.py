@@ -14,7 +14,7 @@ def generate_verification_token(user):
 def verify_verification_token(uidb64, token):
     signer = TimestampSigner()
     try:
-        uid = signer.unsign(token, max_age=2)
+        uid = signer.unsign(token, max_age=3600)
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
         return user
