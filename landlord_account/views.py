@@ -9,6 +9,7 @@ from django.utils.encoding import force_str
 from .models import LandlordProfile
 from django.contrib import messages
 from .tokens import verify_verification_token
+from landlord_property.models import Property,Room
 
 User=get_user_model()
 
@@ -64,5 +65,37 @@ def landlord_logout(request):
     logout(request)
     return redirect('landlord_property:home')
 
+# def landlord_dashboard(request):
+#   # Get the landlord profile of the logged-in user
+#   landlord_profile = LandlordProfile.objects.get(user=request.user)
+
+#   # Get all properties of the landlord
+#   properties = Property.objects.filter(landlord=landlord_profile)
+
+#   # Get all rooms of the landlord (through related properties)
+#   rooms = Room.objects.filter(property__landlord=landlord_profile)
+
+#   return render(request, 'landlord_account/landlord_dashboard.html', {
+#       'landlord_profile': landlord_profile,
+#       'properties': properties,
+#       'rooms': rooms
+#   })
+
 def landlord_dashboard(request):
-    return render(request, 'landlord_account/landlord_dashboard.html')
+    # Get the landlord profile of the logged-in user
+    
+    landlord_profile = LandlordProfile.objects.get(user=request.user)
+    
+    # Get all properties of the landlord
+    properties = Property.objects.filter(landlord=landlord_profile)
+    
+    # Get all rooms by iterating over properties related to the landlord_profile
+    rooms = []
+    for property in properties:
+        rooms.extend(Room.objects.filter(property=property))
+    
+    return render(request, 'landlord_account/landlord_dashboard.html', {
+        'landlord_profile': landlord_profile,
+        'properties': properties,
+        'rooms': rooms
+    })
