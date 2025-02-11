@@ -8,5 +8,5 @@ urlpatterns = [
     path("verify/<uidb64>/<token>/", verify_email, name="verify_email"),
     path('login/', landlord_login, name='landlord_login'),
     path('logout/', landlord_logout, name='landlord_logout'),
-    path('dashboard/', landlord_dashboard, name='landlord_dashboard'),
+    path('<int:pk>/', landlord_dashboard, name='landlord_dashboard'),
 ]

@@ -65,6 +65,10 @@ def landlord_logout(request):
     logout(request)
     return redirect('landlord_property:home')
 
+@login_required
+def landlord_edit(request):
+    return render(request, 'landlord_account/landlord_edit.html')
+
 # def landlord_dashboard(request):
 #   # Get the landlord profile of the logged-in user
 #   landlord_profile = LandlordProfile.objects.get(user=request.user)
@@ -81,15 +85,10 @@ def landlord_logout(request):
 #       'rooms': rooms
 #   })
 
-def landlord_dashboard(request):
-    # Get the landlord profile of the logged-in user
-    
+def landlord_dashboard(request, pk):
+
     landlord_profile = LandlordProfile.objects.get(user=request.user)
-    
-    # Get all properties of the landlord
     properties = Property.objects.filter(landlord=landlord_profile)
-    
-    # Get all rooms by iterating over properties related to the landlord_profile
     rooms = []
     for property in properties:
         rooms.extend(Room.objects.filter(property=property))
