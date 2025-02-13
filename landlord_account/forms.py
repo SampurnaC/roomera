@@ -53,3 +53,23 @@ class LandlordSignInForm(AuthenticationForm):
                 "You do not have permission to log in as a landlord.",
                 code='invalid_login',
             )
+
+class UserEditForm(forms.ModelForm):
+  class Meta:
+    model=CustomUser
+    fields=['phone', 'gender']
+    widgets = {
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'gender': forms.Select(attrs={'class': 'form-control'}),
+        }
+  
+class LandlordEditForm(forms.ModelForm):
+  class Meta:
+    model=LandlordProfile
+    fields=['properties_owned','business_name']
+
+    widgets={
+      'properties_owned': forms.Textarea(attrs={'class': 'form-control'}),
+      'business_name': forms.TextInput(attrs={'class': 'form-control'})
+      
+    }
