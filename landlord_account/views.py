@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
-from .forms import LandlordSignUpForm,LandlordSignInForm
+from .forms import LandlordSignUpForm,LandlordSignInForm,UserEditForm,LandlordEditForm
 from .email import send_verification_email
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
@@ -66,8 +66,20 @@ def landlord_logout(request):
     return redirect('landlord_property:home')
 
 @login_required
-def landlord_edit(request):
-    return render(request, 'landlord_account/landlord_edit.html')
+def landlord_edit(request,pk):
+    landlord_profile=get_object_or_404(LandlordProfile, user=request.user)
+    
+    if request.method=="POST":
+        user_form=UserEditForm(request.POST, instance=request.user)
+        landlord_profile_form=LandlordEditForm(request.POST, instance=landlord_profile)
+        if user_form.is_valid() and landlord_profile_form.is_valid():
+            user_form.save()
+            landlord_profile_form.save()
+            return redirect('landlord_account:landlord_dashboard',pk=landlord_profile.id)
+    else:
+        user_form=UserEditForm(instance=request.user)
+        landlord_profile_form=LandlordEditForm(instance=landlord_profile)  
+    return render(request, 'landlord_account/landlord_edit.html',{'user_form': user_form,'landlord_profile_form':landlord_profile_form})
 
 # def landlord_dashboard(request):
 #   # Get the landlord profile of the logged-in user

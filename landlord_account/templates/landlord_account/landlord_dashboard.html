@@ -14,7 +14,7 @@
     <div class="col-md-4">
       <div class="card shadow-sm p-4">
         <h3 class="fw-bold">{{ landlord_profile.user.username }}'s Profile</h3>
-        
+        <a href="{% url 'landlord_account:landlord_edit' landlord_profile.id %}">Edit Profile</a>
         <!-- Landlord Details -->
         <ul class="list-group">
           <li class="list-group-item"><strong>Username:</strong> {{ landlord_profile.user.username }}</li>
