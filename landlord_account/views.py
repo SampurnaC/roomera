@@ -6,7 +6,7 @@ from .email import send_verification_email
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
-from .models import LandlordProfile
+from .models import CustomUser, LandlordProfile
 from django.contrib import messages
 from .tokens import verify_verification_token
 from landlord_property.models import Property,Room
@@ -28,7 +28,7 @@ def landlord_register(request):
         )
 
         send_verification_email(user, request)
-        return redirect('landlord_account:landlord_dashboard')
+        return redirect('landlord_account:landlord_dashboard', slug=user.slug)
   else:
     form=LandlordSignUpForm()
 
@@ -55,7 +55,7 @@ def landlord_login(request):
         if form.is_valid():
             user=form.get_user()
             login(request,user)
-            return redirect('landlord_account:landlord_dashboard')
+            return redirect('landlord_account:landlord_dashboard', slug=user.slug)
     else:
         form=LandlordSignInForm()
     return render(request, 'landlord_account/landlord_login.html', {'form': form})
@@ -97,9 +97,9 @@ def landlord_edit(request,pk):
 #       'rooms': rooms
 #   })
 
-def landlord_dashboard(request, pk):
-
-    landlord_profile = LandlordProfile.objects.get(user=request.user)
+def landlord_dashboard(request, slug):
+    landlord_user=get_object_or_404(CustomUser, slug=slug, is_landlord=True)
+    landlord_profile = LandlordProfile.objects.get(user=landlord_user)
     properties = Property.objects.filter(landlord=landlord_profile)
     rooms = []
     for property in properties:
