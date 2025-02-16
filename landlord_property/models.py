@@ -5,9 +5,10 @@ class Property(models.Model):
     landlord = models.ForeignKey(LandlordProfile, on_delete=models.CASCADE, related_name="properties")
     name=models.CharField(max_length=100)
     description=models.TextField()
-    address=models.TextField()
     postcode=models.CharField(max_length=100)
     is_active=models.BooleanField(default=True)
+    latitude=models.FloatField(null=True, blank=True)
+    longitude=models.FloatField(null=True,blank=True)
     created_at=models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
