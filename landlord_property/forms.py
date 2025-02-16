@@ -4,7 +4,7 @@ from .models import Property,Room,RoomImage
 class PropertyForm(forms.ModelForm):
   class Meta:
       model=Property
-      fields=['name','description','address','postcode','is_active']
+      fields=['name','description','postcode','is_active']
         
 class RoomForm(forms.ModelForm):
   class Meta:

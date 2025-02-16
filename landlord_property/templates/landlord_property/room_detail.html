@@ -1,4 +1,5 @@
 {% extends 'landlord_account/main.html' %}
+{% load leaflet_tags %}
 {% block content %}
 
 <div class="container mt-5">
@@ -31,6 +32,7 @@
           </div>
         </div>
 
+        <!-- Image Section -->
         {% if room.images.all %}
         <div class="text-center">
           <!-- Main Image (clickable) -->
@@ -88,34 +90,131 @@
           <p class="text-center mt-3">No images available for this room.</p>
         {% endif %}
 
+        <!-- Map Section -->
+        <h3 class="mt-5">Location on Map</h3>
+        <div id="map" style="width: 100%; height: 400px;" 
+            data-latitude="{{ room.property.latitude|default:"0" }}" 
+            data-longitude="{{ room.property.longitude|default:"0" }}" 
+            data-rent-price="{{ room.rent_price }}">
+        </div>
+
+        <!-- Nearby Transport Section -->
+        <h3 class="mt-4">Nearby Bus Routes</h3>
+        <ul id="bus-stops" class="list-group"></ul>
       </div>
     </div>
   </div>
 </div>
 
+{% leaflet_js %}
+{% leaflet_css %}
+
 <script>
-  // Function to open the slider when clicking a thumbnail
-  function openSliderFromThumbnail(element) {
-      var index = element.getAttribute("data-index");  // Get index from data attribute
-      openSlider(index);
-  }
+    // Image Slider Functionality
+    function openSliderFromThumbnail(element) {
+        var index = element.getAttribute("data-index");
+        openSlider(index);
+    }
 
-  // Function to activate the correct slide in the carousel
-  function openSlider(index) {
-      index = parseInt(index);  // Ensure index is a number
-      var carousel = document.getElementById('roomCarousel');
-      var carouselItems = carousel.querySelectorAll('.carousel-item');
+    function openSlider(index) {
+        index = parseInt(index);
+        var carousel = document.getElementById('roomCarousel');
+        var carouselItems = carousel.querySelectorAll('.carousel-item');
 
-      // Remove "active" class from all slides
-      carouselItems.forEach(item => item.classList.remove('active'));
+        carouselItems.forEach(item => item.classList.remove('active'));
 
-      // Add "active" class to the selected slide
-      carouselItems[index].classList.add('active');
+        carouselItems[index].classList.add('active');
 
-      // Open the modal
-      var modal = new bootstrap.Modal(document.getElementById('imageModal'));
-      modal.show();
-  }
+        var modal = new bootstrap.Modal(document.getElementById('imageModal'));
+        modal.show();
+    }
+
+    var mapElement = document.getElementById('map');
+    var latitude = parseFloat(mapElement.getAttribute('data-latitude'));
+    var longitude = parseFloat(mapElement.getAttribute('data-longitude'));
+    var rentPrice = mapElement.getAttribute('data-rent-price');
+
+    if (!isNaN(latitude) && !isNaN(longitude)) {
+        var map = L.map('map').setView([latitude, longitude], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        var marker = L.marker([latitude, longitude]).addTo(map);
+        marker.bindPopup("<b>£" + rentPrice + "</b>").openPopup();
+    }
+
+    var appId = "{{ appId }}";
+    var appKey = "{{ appKey }}";
+
+
+    async function fetchNearbyBusStops() {
+    const radius = 1000;
+    const busStopsList = document.getElementById('bus-stops');
+    busStopsList.innerHTML = '';
+
+    const apiUrl = `https://api.tfl.gov.uk/StopPoint/?lat=${latitude}&lon=${longitude}&stopTypes=NaptanPublicBusCoachTram&radius=${radius}&app_id=${appId}&app_key=${appKey}`;
+
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error('Failed to fetch bus stops');
+
+        const busStops = (await response.json()).stopPoints.sort((a, b) => a.distance - b.distance);
+
+        if (!busStops.length) return displayNoStops(busStopsList);
+
+        const busPromises = busStops.map(stop => getBusStopDetails(stop, appId, appKey));
+        const allStops = await Promise.all(busPromises);
+
+        const uniqueBusRoutes = getUniqueBusRoutes(allStops);
+        const sortedRoutes = Object.entries(uniqueBusRoutes).sort(([, a], [, b]) => a.distance - b.distance);
+
+        sortedRoutes.forEach(([busNumber, stop]) => {
+            const distance = stop.distance > 1000 
+                ? `${(stop.distance / 1609.34).toFixed(1)} miles` 
+                : `${stop.distance} meters`;
+
+            busStopsList.innerHTML += `
+                <li class="list-group-item">
+                    <strong>Bus ${busNumber}</strong> - ${distance} away
+                </li>`;
+        });
+
+    } catch (error) {
+        console.error('Error fetching bus stops data:', error);
+    }
+}
+
+    async function getBusStopDetails(stop, appId, appKey) {
+        const stopUrl = `https://api.tfl.gov.uk/StopPoint/${stop.id}/Arrivals?app_id=${appId}&app_key=${appKey}`;
+        const stopData = await (await fetch(stopUrl)).json();
+
+        const busNumbers = [...new Set(stopData.map(arrival => arrival.lineName))].sort((a, b) => a - b);
+        return {
+            distance: Math.round(stop.distance),
+            busNumbers
+        };
+    }
+
+    function getUniqueBusRoutes(allStops) {
+        const uniqueBusRoutes = {};
+        allStops.forEach(stop => {
+            stop.busNumbers.forEach(busNumber => {
+                if (!uniqueBusRoutes[busNumber] || uniqueBusRoutes[busNumber].distance > stop.distance) {
+                    uniqueBusRoutes[busNumber] = stop;
+                }
+            });
+        });
+        return uniqueBusRoutes;
+    }
+
+    function displayNoStops(busStopsList) {
+        busStopsList.innerHTML = `
+            <li class="list-group-item">
+                No bus routes found within 1000 meters.
+            </li>`;
+    }
+
+    fetchNearbyBusStops();
+
 </script>
 
 {% endblock %}

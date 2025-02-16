@@ -1,9 +1,12 @@
 from django.shortcuts import render,redirect,get_object_or_404
+from geopy.geocoders import Nominatim
 from .forms import PropertyForm,RoomForm,RoomImageForm,RoomSearchForm
 from landlord_account.models import LandlordProfile
 from .models import Property,Room,RoomImage
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
+geolocator = Nominatim(user_agent="myapp")
 def index(request):
     featured_rooms = Room.objects.filter(is_featured=True)
     return render(request, 'landlord_property/index.html',{'featured_rooms': featured_rooms})
@@ -19,10 +22,21 @@ def add_property(request):
 
     if request.method=="POST":
         form=PropertyForm(request.POST)
-        property=form.save(commit=False)
-        property.landlord=landlord_profile
+        if form.is_valid():
+            
+            property=form.save(commit=False)
+            property.landlord=landlord_profile
+            address=property.postcode
+            location=geolocator.geocode(address)
+            
+            if location:
+                property.latitude=location.latitude
+                property.longitude=location.longitude
+            else:
+                property.latitude=None
+                property.longitude=None
+                
         property.save()
-        
         return redirect('landlord_property:home')
     else:
         form=PropertyForm()
@@ -77,4 +91,9 @@ def search_rooms(request):
 
 def room_detail(request, room_id):
     room = get_object_or_404(Room, id=room_id)
-    return render(request, 'landlord_property/room_detail.html',{'room': room})
+    context = {
+        'room': room,
+        'appId': settings.APP_ID,
+        'appKey': settings.APP_KEY,
+    }
+    return render(request, 'landlord_property/room_detail.html',context)
