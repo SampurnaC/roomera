@@ -24,6 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
+APP_ID = str(os.getenv('appId'))
+APP_KEY = str(os.getenv('appKey'))
+
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -44,6 +47,7 @@ INSTALLED_APPS = [
     
     "crispy_forms",
     "crispy_bootstrap5",
+    "leaflet",
     
     #installed apps
     'landlord_account',
