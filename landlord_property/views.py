@@ -4,7 +4,7 @@ from .forms import PropertyForm,RoomForm,RoomImageForm,RoomSearchForm
 from landlord_account.models import LandlordProfile
 from .models import Property,Room,RoomImage
 from django.contrib.auth.decorators import login_required
-
+from django.conf import settings
 
 geolocator = Nominatim(user_agent="myapp")
 def index(request):
@@ -91,4 +91,9 @@ def search_rooms(request):
 
 def room_detail(request, room_id):
     room = get_object_or_404(Room, id=room_id)
-    return render(request, 'landlord_property/room_detail.html',{'room': room})
+    context = {
+        'room': room,
+        'appId': settings.APP_ID,
+        'appKey': settings.APP_KEY,
+    }
+    return render(request, 'landlord_property/room_detail.html',context)
