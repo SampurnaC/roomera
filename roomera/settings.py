@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     
     "crispy_forms",
     "crispy_bootstrap5",
-    "leaflet",
+    # "leaflet",
     
     #installed apps
     'landlord_account',
@@ -66,6 +66,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'roomera.urls'
@@ -155,3 +157,11 @@ LOGIN_URL = '/landlord/login/'
 # for images
 MEDIA_URL="/media/"
 MEDIA_ROOT=os.path.join(BASE_DIR, "media")
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'sampurna.chapagainnn@gmail.com'
+EMAIL_HOST_PASSWORD = 'sirmqgytemoiktue'
+DEFAULT_FROM_EMAIL = 'sampurna.chapagainnn@gmail.com'
