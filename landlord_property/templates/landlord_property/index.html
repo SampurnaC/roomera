@@ -71,7 +71,7 @@
         {% for room in featured_rooms %}
         <div class="col-md-4">
             <div class="card featured-room">
-                <img src="{{ room.images.first.image.url }}" alt="Room Image" class="img-fluid">
+                <a href="{% url 'landlord_property:room_detail' room.id %}"><img src="{{ room.images.first.image.url }}" alt="Room Image" class="img-fluid"></a>
                 <div class="card-body">
                     <h5 class="card-title">{{ room.title }}</h5>
                     <p class="card-text">Rent: £{{ room.rent_price }} / month</p>
