@@ -99,7 +99,13 @@
 
         <!-- Nearby Transport Section -->
         <h3 class="mt-4">Nearby Bus Routes</h3>
+        
         <ul id="bus-stops" class="list-group"></ul>
+        <h3 class="mt-4">Nearby Train Routes</h3>
+
+        <ul id="train-stations" class="list-group">
+          <!-- Train stations will be displayed here -->
+      </ul>
       </div>
     </div>
   </div>
@@ -144,6 +150,79 @@
     var appKey = "{{ appKey }}";
 
 
+
+    async function fetchNearbyTrainStations() {
+    const radius = 5000;
+    const trainStationsList = document.getElementById('train-stations');
+    trainStationsList.innerHTML = '';
+
+    const apiUrl = `https://api.tfl.gov.uk/StopPoint/?lat=${latitude}&lon=${longitude}&stopTypes=NaptanRailStation,NaptanMetroStation&radius=${radius}&app_id=${appId}&app_key=${appKey}`;
+
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error('Failed to fetch train stations');
+
+        const trainStations = (await response.json()).stopPoints.sort((a, b) => a.distance - b.distance);
+        if (!trainStations.length) return displayNoStations(trainStationsList);
+
+        const stationPromises = trainStations.map(station => getTrainStationDetails(station, appId, appKey));
+        const allStations = await Promise.all(stationPromises);
+
+        const uniqueTrainRoutes = getUniqueTrainRoutes(allStations);
+        const sortedRoutes = Object.entries(uniqueTrainRoutes).sort(([, a], [, b]) => a.distance - b.distance);
+
+        sortedRoutes.forEach(([trainNumber, station]) => {
+            const distance = station.distance > 1000 
+                ? `${(station.distance / 1609.34).toFixed(1)} miles` 
+                : `${station.distance} meters`;
+
+            trainStationsList.innerHTML += `
+                <li class="list-group-item">
+                  <i class="fas fa-train fa-lg text-primary"></i><strong>${trainNumber}</strong> - ${distance} away
+                </li>`;
+        });
+
+    } catch (error) {
+        console.error('Error fetching train stations data:', error);
+    }
+}
+
+async function getTrainStationDetails(station, appId, appKey) {
+    const stationUrl = `https://api.tfl.gov.uk/StopPoint/${station.id}/Arrivals?app_id=${appId}&app_key=${appKey}`;
+    const stationData = await (await fetch(stationUrl)).json();
+
+    const trainNumbers = [...new Set(stationData.map(arrival => arrival.lineName))].sort((a, b) => a - b);
+    return {
+        distance: Math.round(station.distance),
+        trainNumbers
+    };
+}
+
+function getUniqueTrainRoutes(allStations) {
+    const uniqueTrainRoutes = {};
+    allStations.forEach(station => {
+        station.trainNumbers.forEach(trainNumber => {
+            if (!uniqueTrainRoutes[trainNumber] || uniqueTrainRoutes[trainNumber].distance > station.distance) {
+                uniqueTrainRoutes[trainNumber] = station;
+            }
+        });
+    });
+    return uniqueTrainRoutes;
+}
+
+function displayNoStations(trainStationsList) {
+    trainStationsList.innerHTML = `
+        <li class="list-group-item">
+            No train routes found within 1000 meters.
+        </li>`;
+}
+
+fetchNearbyTrainStations();
+
+
+
+
+
     async function fetchNearbyBusStops() {
     const radius = 1000;
     const busStopsList = document.getElementById('bus-stops');
@@ -156,7 +235,7 @@
         if (!response.ok) throw new Error('Failed to fetch bus stops');
 
         const busStops = (await response.json()).stopPoints.sort((a, b) => a.distance - b.distance);
-
+        debugger
         if (!busStops.length) return displayNoStops(busStopsList);
 
         const busPromises = busStops.map(stop => getBusStopDetails(stop, appId, appKey));
@@ -172,7 +251,7 @@
 
             busStopsList.innerHTML += `
                 <li class="list-group-item">
-                    <strong>${busNumber}</strong> - ${distance} away
+                  <i class="fas fa-bus fa-lg text-danger">  </i> <strong>${busNumber}</strong> - ${distance} away  
                 </li>`;
         });
 
