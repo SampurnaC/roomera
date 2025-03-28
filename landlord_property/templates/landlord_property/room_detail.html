@@ -149,7 +149,7 @@
     var appId = "{{ appId }}";
     var appKey = "{{ appKey }}";
 
-
+    
 
     async function fetchNearbyTrainStations() {
     const radius = 5000;
@@ -170,17 +170,37 @@
 
         const uniqueTrainRoutes = getUniqueTrainRoutes(allStations);
         const sortedRoutes = Object.entries(uniqueTrainRoutes).sort(([, a], [, b]) => a.distance - b.distance);
+    const transportLogos = {
+      'Bus': '/static/images/tfl/bus.png',
+      'Underground': '/static/images/tfl/underground.png',
+      'Suffragette': '/static/images/Overground_Picto_CMYK.jpg',
+      'National Rail': '/static/images/NationalRail_Picto_CMYK.jpg',
+      'DLR': '/static/images/DLR_Picto_CMYK.jpg',
+      'Elizabeth line': ''
+    };
 
-        sortedRoutes.forEach(([trainNumber, station]) => {
-            const distance = station.distance > 1000 
-                ? `${(station.distance / 1609.34).toFixed(1)} miles` 
-                : `${station.distance} meters`;
+    // Optionally handle specific lines under Underground
+    const lineMapping = {
+        'Jubilee': 'Underground', // Jubilee is an Underground line
+        'Central': 'Underground',
+        'Victoria': 'Underground',
+        'Bakerloo': 'Underground'
+    };
+    sortedRoutes.forEach(([modeName, station]) => {
+    const distance = station.distance > 1000 
+        ? `${(station.distance / 1609.34).toFixed(1)} miles` 
+        : `${station.distance} meters`;
 
-            trainStationsList.innerHTML += `
-                <li class="list-group-item">
-                  <i class="fas fa-train fa-lg text-primary"></i>    <strong>${trainNumber}</strong> - ${distance} away
-                </li>`;
-        });
+    // Get the correct logo or use a default one
+    console.log(modeName)
+    const logoSrc = transportLogos[modeName] || '/static/images/tfl/default.png';
+
+    trainStationsList.innerHTML += `
+        <li class="list-group-item">
+            <img src="${logoSrc}" alt="${modeName} Logo" class="transport-logo" style="width: 40px; "/>
+            <strong>${modeName.charAt(0).toUpperCase() + modeName.slice(1)}</strong> - ${distance} away
+        </li>`;
+});
 
     } catch (error) {
         console.error('Error fetching train stations data:', error);
@@ -235,7 +255,6 @@ fetchNearbyTrainStations();
         if (!response.ok) throw new Error('Failed to fetch bus stops');
 
         const busStops = (await response.json()).stopPoints.sort((a, b) => a.distance - b.distance);
-        debugger
         if (!busStops.length) return displayNoStops(busStopsList);
 
         const busPromises = busStops.map(stop => getBusStopDetails(stop, appId, appKey));
@@ -251,7 +270,7 @@ fetchNearbyTrainStations();
 
             busStopsList.innerHTML += `
                 <li class="list-group-item">
-                  <i class="fas fa-bus fa-lg text-danger">  </i> <strong>${busNumber}</strong> - ${distance} away  
+                  <img src="/static/images/Bus_Picto_CMYK.jpg" alt="Bus Icon" class="bus-icon" style="width: 25px; "/> <strong>${busNumber}</strong> - ${distance} away  
                 </li>`;
         });
 
